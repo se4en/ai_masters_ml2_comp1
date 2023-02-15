@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # Competition data
-data/
+/data
 
 # logs
 mlruns/
