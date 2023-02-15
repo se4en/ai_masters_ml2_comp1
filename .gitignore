@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# Competition data
+data/
+
+# logs
+mlruns/
+catboost_info/
+multirun/
+.DS_Store
+
 # Distribution / packaging
 .Python
 build/
