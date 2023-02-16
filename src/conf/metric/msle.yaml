@@ -1,0 +1,3 @@
+_partial_: true
+_target_: sklearn.metrics.mean_squared_log_error
+squared: false

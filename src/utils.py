@@ -1,5 +1,6 @@
 from omegaconf import DictConfig, ListConfig
 import mlflow
+import pandas as pd
 
 
 def log_params_from_omegaconf_dict(params):
@@ -19,5 +20,10 @@ def _explore_recursive(parent_name, element):
             mlflow.log_param(f"{parent_name}.{i}", v)
 
 
-def create_submission():
-    pass
+def create_submission(
+    X: pd.DataFrame, y_pred: pd.Series, fname: str = "submission.csv"
+):
+    subm_df = pd.DataFrame({"id": X["id"].tolist()})
+    subm_df["result_price"] = y_pred
+
+    subm_df.to_csv(fname, index=False)

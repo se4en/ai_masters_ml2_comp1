@@ -1,0 +1,3 @@
+_target_: lightgbm.LGBMRegressor
+random_state: ${general.random_seed}
+n_jobs: -1

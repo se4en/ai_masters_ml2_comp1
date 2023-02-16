@@ -1,0 +1,7 @@
+_partial_: true
+_target_: validation.timeline_val.train_test_split
+n: 5
+test_size: 3239
+shuffle: true
+random_seed: ${general.random_seed}
+val_type: growing-window
