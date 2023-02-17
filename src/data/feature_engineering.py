@@ -65,11 +65,15 @@ class FeatureGenerator:
                 labels += test_df[cat_col_name].tolist()
             le.fit(labels)
 
-            dfs = [train_df, val_df] if test_df is None else [train_df, val_df, test_df]
-            for df in dfs:
-                df[cat_col_name] = pd.Series(
-                    le.transform(df[cat_col_name]), dtype="category"
-                )
+            train_df.loc[:, cat_col_name] = le.transform(train_df[cat_col_name])
+            train_df[cat_col_name] = train_df[cat_col_name].astype("category")
+
+            val_df.loc[:, cat_col_name] = le.transform(val_df[cat_col_name])
+            val_df[cat_col_name] = val_df[cat_col_name].astype("category")
+
+            if test_df is not None:
+                test_df.loc[:, cat_col_name] = le.transform(test_df[cat_col_name])
+                test_df[cat_col_name] = test_df[cat_col_name].astype("category")
 
         return train_df, val_df, test_df
 
@@ -79,15 +83,50 @@ class FeatureGenerator:
     ) -> t.Tuple[pd.DataFrame, pd.DataFrame, t.Optional[pd.DataFrame]]:
         dfs = [train_df, val_df] if test_df is None else [train_df, val_df, test_df]
         for df in dfs:
-            df.loc[:, "year"] = df["timestamp"].apply(lambda x: x.year)
-            df.loc[:, "month"] = df["timestamp"].apply(lambda x: x.month)
+            df.loc[:, "age"] = np.nan
+            _not_na_ids = ~df["year_of_construction"].isna()
+            df.loc[_not_na_ids, "age"] = (
+                df[_not_na_ids]["timestamp"].apply(lambda x: x.year)
+                - df[_not_na_ids]["year_of_construction"]
+            )
+            # df.loc[:, "year"] = df["timestamp"].apply(lambda x: x.year)
+            # df.loc[:, "month"] = df["timestamp"].apply(lambda x: x.month)
+            # df.loc[:, "day"] = df["timestamp"].apply(lambda x: x.day)
 
+        return train_df, val_df, test_df
+
+    @staticmethod
+    def __fill_na_value(
+        train_df: pd.DataFrame,
+        val_df: pd.DataFrame,
+        test_df: t.Optional[pd.DataFrame],
+        feature_name: str,
+        value: t.Any,
+    ) -> t.Tuple[pd.DataFrame, pd.DataFrame, t.Optional[pd.DataFrame]]:
+        train_df.loc[:, feature_name] = train_df[feature_name].fillna(value)
+        val_df.loc[:, feature_name] = val_df[feature_name].fillna(value)
+        if test_df is not None:
+            test_df.loc[:, feature_name] = test_df[feature_name].fillna(value)
         return train_df, val_df, test_df
 
     @staticmethod
     def __fill_na(
         train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: t.Optional[pd.DataFrame]
     ) -> t.Tuple[pd.DataFrame, pd.DataFrame, t.Optional[pd.DataFrame]]:
+        dfs = [train_df, val_df] if test_df is None else [train_df, val_df, test_df]
+        for df in dfs:
+            df.loc[df["year_of_construction"] == 0, "year_of_construction"] = 2000
+            df.loc[df["year_of_construction"] == 1, "year_of_construction"] = 2001
+
+            df.loc[:, "floor"] = df["floor"].fillna(1)
+
+        year_mean = round(
+            np.mean(df[~df["year_of_construction"].isna()]["year_of_construction"])
+        )
+        train_df, val_df, test_df = FeatureGenerator.__fill_na_value(
+            train_df, val_df, test_df, "year_of_construction", year_mean
+        )
+
         return train_df, val_df, test_df
 
     @staticmethod
@@ -96,7 +135,7 @@ class FeatureGenerator:
     ) -> t.Tuple[pd.DataFrame, pd.DataFrame, t.Optional[pd.DataFrame]]:
         dfs = [train_df, val_df] if test_df is None else [train_df, val_df, test_df]
         for df in dfs:
-            df.drop(columns=["timestamp"], inplace=True)
+            df.drop(columns=["timestamp", "id"], inplace=True)
 
         return train_df, val_df, test_df
 
