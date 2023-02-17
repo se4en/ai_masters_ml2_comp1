@@ -1,0 +1,7 @@
++model.depth: range(8, 14)
++model.learning_rate: tag(log, interval(0.0001, 0.1))
++model.iterations: range(300, 1500)
++model.l2_leaf_reg: range(1, 20)
++model.bootstrap_type: choice(Bayesian, Bernoulli, MVS)
+# +model.boosting_type: choice(dart, goss, gbdt)
+# +model.num_leaves: range(2, 256)

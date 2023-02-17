@@ -1,5 +1,5 @@
-+model.max_depth: range(4, 16)
++model.max_depth: range(8, 16)
 +model.n_estimators: range(100, 1000)
-+model.boosting_type: choice(dart, goss, gbdt)
+# +model.boosting_type: choice(dart, goss, gbdt)
 +model.num_leaves: range(2, 256)
-+model.learning_rate: tag(log, interval(0.001, 1.0))
++model.learning_rate: tag(log, interval(0.0001, 0.1))

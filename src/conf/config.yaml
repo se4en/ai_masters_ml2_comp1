@@ -4,23 +4,25 @@ defaults:
   - feature_generator: feature_generator
   - cv: timeline_cv
   - metric: msle
-  - model: lightgbm
-  - search_space@hydra.sweeper.params: lightgbm
+  - model: catboost
+  - search_space@hydra.sweeper.params: catboost
   - override hydra/sweeper: optuna
 
 general:
-  runname: "lgbm_fe_0"
-  random_seed: 20230214
+  runname: catboost_fe_2_new_cv
+  random_seed: 20230216
   
 hydra:
   sweeper:
     _target_: hydra_plugins.hydra_optuna_sweeper.optuna_sweeper.OptunaSweeper
     direction: minimize
-    study_name: mlflow.runname
+    study_name: ${general.runname}
     storage: null
-    n_trials: 100
+    n_trials: 150
     n_jobs: 1
     sampler:
       _target_: optuna.samplers.TPESampler
       seed: ${general.random_seed}
-      n_startup_trials: 20
+      n_startup_trials: 15
+    params:
+      +model.depth: range(6, 12)

@@ -1,2 +1,4 @@
 _target_: catboost.CatBoostRegressor
 random_seed: ${general.random_seed}
+verbose: false
+cat_features: [product_type, district_name]

@@ -1,0 +1,4 @@
+_target_: sklearn.model_selection.StratifiedKFold
+n_splits: 5
+shuffle: true
+random_state: ${general.random_seed}
