@@ -23,11 +23,8 @@ def main(cfg: DictConfig) -> float:
     mlflow.set_tracking_uri(os.path.join(os.path.dirname(__file__), "../mlruns"))
     mlflow.set_experiment(cfg.general.runname)
 
-    train_df = pd.read_csv(cfg.data.train_path)
-    test_df = pd.read_csv(cfg.data.test_path)
-
-    X_train, y_train = load_data(train_df)
-    X_test, y_test = load_data(test_df)
+    X_train, y_train = load_data(cfg.data.train_path)
+    X_test, y_test = load_data(cfg.data.test_path)
     test_ids = X_test["id"].copy()
 
     cv = instantiate(cfg.cv)
